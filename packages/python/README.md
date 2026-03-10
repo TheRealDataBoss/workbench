@@ -1,106 +1,122 @@
 # contextkeeper
 
-mcp-name: io.github.TheRealDataBoss/contextkeeper
-
-[![PyPI version](https://img.shields.io/pypi/v/contextkeeper?color=00e5ff&labelColor=0d1320)](https://pypi.org/project/contextkeeper/)
-[![Python](https://img.shields.io/pypi/pyversions/contextkeeper?color=00ffa3&labelColor=0d1320)](https://pypi.org/project/contextkeeper/)
-[![License](https://img.shields.io/pypi/l/contextkeeper?color=7b61ff&labelColor=0d1320)](https://github.com/TheRealDataBoss/contextkeeper/blob/main/LICENSE)
-[![npm](https://img.shields.io/npm/v/contextkeeper?color=ffb300&labelColor=0d1320)](https://www.npmjs.com/package/contextkeeper)
+[![PyPI](https://img.shields.io/pypi/v/contextkeeper?color=00d4ff&labelColor=0a0a0a)](https://pypi.org/project/contextkeeper/)
+[![Python 3.10+](https://img.shields.io/pypi/pyversions/contextkeeper?color=6acc65&labelColor=0a0a0a)](https://pypi.org/project/contextkeeper/)
+[![License: MIT](https://img.shields.io/pypi/l/contextkeeper?color=7b61ff&labelColor=0a0a0a)](https://github.com/TheRealDataBoss/contextkeeper/blob/main/LICENSE)
+[![MCP Native](https://img.shields.io/badge/MCP-native-00d4ff?labelColor=0a0a0a)](https://registry.modelcontextprotocol.io)
 
 > **Zero model drift between AI agents.**
-> Universal session continuity protocol and CLI for Claude, GPT, Gemini, and any LLM.
-
----
-
-## The Problem
-
-You switch from Claude to GPT mid-project. You open a new chat. You spend 20 minutes re-explaining your stack, your decisions, your constraints. Again. The AI confidently suggests something you already ruled out three sessions ago.
-
-**Every AI session starts with amnesia. contextkeeper fixes this.**
-
-It gives every project a structured state file — synced to GitHub — that any AI agent can read in under 60 seconds.
 
 ---
 
 ## Install
+
 ```bash
 pip install contextkeeper
-# or
-npm install -g contextkeeper
 ```
-
----
-
-## How It Works
-contextkeeper init    →  generates STATE_VECTOR.json + HANDOFF.md
-contextkeeper sync    →  pushes state to your GitHub bridge repo
-contextkeeper bootstrap →  generates a paste-ready prompt for any AI
-paste it in → full context in < 60 seconds
-
-Works with **Claude**, **ChatGPT**, **Gemini**, **Llama**, **Mistral**, or any LLM that can read a URL.
-
----
 
 ## Quickstart
+
 ```bash
-cd my-project
 contextkeeper init
-
-# sync state to GitHub
-contextkeeper sync
-
-# generate bootstrap prompt and copy to clipboard
-contextkeeper bootstrap -p my-project --clipboard
-
-# paste into Claude, GPT, Gemini — full context restored instantly
+contextkeeper sync --agent claude
+contextkeeper bootstrap --clipboard
+# paste into any AI — full context restored
 ```
 
----
-
-## Commands
+## CLI Reference
 
 | Command | Description |
 |---|---|
-| `contextkeeper init` | Auto-detect project type, generate `STATE_VECTOR.json` + `HANDOFF.md` |
-| `contextkeeper sync` | Push state files to your GitHub bridge repo |
-| `contextkeeper bootstrap` | Generate paste-ready AI prompt, optionally copy to clipboard |
-| `contextkeeper status` | Show all tracked projects in the bridge repo |
-| `contextkeeper doctor` | 8-point health check — token, git, schema, GitHub API |
+| `init` | Scaffold project context — state vector, conventions, tasks |
+| `sync` | Scan repo and update state vector with current project state |
+| `bootstrap` | Generate paste-ready briefing for any AI agent |
+| `status` | Show tracked projects and their current state |
+| `doctor` | Validate context files for consistency and missing fields |
+| `migrate` | Run database schema migrations |
+| `export` | Export project context to JSON/Markdown |
+| `diff` | Show what changed since last sync |
+| `serve` | Start the REST API server (FastAPI + Uvicorn) |
+| `sessions` | List and manage agent sessions |
+| `tasks` | List and manage project tasks |
+| `decisions` | List and manage architectural decisions |
+| `auth` | Create and revoke API keys (`ck_` prefix, SHA-256 stored) |
 
-### init
-```bash
-contextkeeper init [-p PROJECT] [-t TYPE] [--bridge REPO]
+## Python SDK
+
+```python
+from contextkeeper import ContextKeeperClient
+
+client = ContextKeeperClient()
+
+# Sessions
+session = client.create_session(agent="claude", project="myproject")
+client.end_session(session.id, summary="Implemented auth module")
+
+# Tasks & decisions
+client.create_task(project="myproject", title="Add rate limiting")
+client.create_decision(project="myproject", title="Use PostgreSQL", rationale="Need JSONB")
+
+# Handoff
+handoff = client.create_handoff(from_session=s1.id, to_agent="gpt-4")
 ```
 
-### sync
-```bash
-contextkeeper sync [--bridge REPO] [--dry-run]
+## MCP Server
+
+10 tools — native Claude Code integration via [Model Context Protocol](https://modelcontextprotocol.io).
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "contextkeeper": {
+      "command": "python",
+      "args": ["-m", "contextkeeper.mcp"]
+    }
+  }
+}
 ```
 
-### bootstrap
+## Backends
+
 ```bash
-contextkeeper bootstrap -p PROJECT [--bridge REPO] [--clipboard]
+# File (default) — zero config
+contextkeeper init
+
+# SQLite
+contextkeeper init --backend sqlite
+
+# PostgreSQL
+contextkeeper init --backend postgres --db-url postgresql://user:pass@localhost/ck
 ```
 
-### status
+## REST API
+
+14 endpoints + 3 auth endpoints. FastAPI with OpenAPI spec.
+
 ```bash
-contextkeeper status [--bridge REPO] [--json]
+contextkeeper serve --port 8420
+# → http://localhost:8420/docs   (Swagger UI)
+# → http://localhost:8420/openapi.json
 ```
 
-### doctor
-```bash
-contextkeeper doctor
-```
+Auth header: `Authorization: Bearer ck_your_api_key`
 
----
+## Multi-Agent Coordination
 
-## Requirements
+Three modes for concurrent agent access:
 
-- Python 3.10+
-- `git` on PATH
-- GitHub PAT token (for sync)
+- **sequential** — one agent at a time (default)
+- **lock-based** — pessimistic locking per resource
+- **merge** — optimistic merge with conflict resolution
 
----
+## Links
+
+- [GitHub](https://github.com/TheRealDataBoss/contextkeeper)
+- [Docs](https://therealdataboss.github.io/contextkeeper)
+- [PyPI](https://pypi.org/project/contextkeeper/)
+- [MCP Registry](https://registry.modelcontextprotocol.io)
 
 ## License
 
