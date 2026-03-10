@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 # mcp-name: io.github.TheRealDataBoss/contextkeeper
 name = "contextkeeper"
-version = "0.5.0"
+version = "0.6.0"
 description = "Zero model drift between AI agents. Universal session continuity CLI and Python library for Claude, GPT, Gemini, and any LLM."
 readme = "README.md"
 license = "MIT"
@@ -43,7 +43,8 @@ dependencies = [
 [project.optional-dependencies]
 server = ["fastapi>=0.100.0", "uvicorn>=0.20.0", "httpx>=0.24.0"]
 mcp = ["fastmcp>=0.1.0"]
-all = ["fastapi>=0.100.0", "uvicorn>=0.20.0", "httpx>=0.24.0", "fastmcp>=0.1.0"]
+postgres = ["psycopg2-binary>=2.9"]
+all = ["fastapi>=0.100.0", "uvicorn>=0.20.0", "httpx>=0.24.0", "fastmcp>=0.1.0", "psycopg2-binary>=2.9"]
 dev = ["pytest>=8.0", "pytest-cov>=5.0"]
 
 [project.scripts]

@@ -41,6 +41,9 @@ def _detect_backend(project_dir: Path) -> ContextKeeperBackend:
             backend_type = data.get("backend", "file")
             if backend_type == "sqlite":
                 return SQLiteBackend(project_dir)
+            if backend_type == "postgres":
+                from contextkeeper.backends.postgres import PostgresBackend
+                return PostgresBackend()
         except (json.JSONDecodeError, OSError):
             pass
     return FileBackend(project_dir)
@@ -50,6 +53,9 @@ def _make_backend(backend_type: str, project_dir: Path) -> ContextKeeperBackend:
     """Create a backend by type name."""
     if backend_type == "sqlite":
         return SQLiteBackend(project_dir)
+    if backend_type == "postgres":
+        from contextkeeper.backends.postgres import PostgresBackend
+        return PostgresBackend()
     return FileBackend(project_dir)
 
 

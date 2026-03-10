@@ -53,3 +53,15 @@ class SchemaVersionError(ContextKeeperError):
         )
         self.expected = expected
         self.got = got
+
+
+class AuthenticationError(ContextKeeperError):
+    """Raised when authentication fails (missing or invalid credentials)."""
+
+
+class AuthorizationError(ContextKeeperError):
+    """Raised when authenticated user lacks required permissions."""
+
+
+class RateLimitError(ContextKeeperError):
+    """Raised when request rate limit is exceeded."""

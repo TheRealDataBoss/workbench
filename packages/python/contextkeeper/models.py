@@ -127,3 +127,49 @@ class HandoffDiff(BaseModel):
     decisions_added: list[Decision] = Field(default_factory=list)
     questions_added: list[str] = Field(default_factory=list)
     next_steps_changed: list[str] = Field(default_factory=list)
+
+
+# ── Auth & multi-tenancy models ──
+
+
+class ApiKey(BaseModel):
+    id: str = Field(default_factory=_uuid)
+    key_hash: str
+    name: str
+    user_id: str
+    org_id: str = ""
+    scopes: list[str] = Field(default_factory=lambda: ["read", "write"])
+    created_at: datetime = Field(default_factory=_utcnow)
+    expires_at: datetime | None = None
+    last_used_at: datetime | None = None
+    revoked: bool = False
+
+
+class User(BaseModel):
+    id: str = Field(default_factory=_uuid)
+    email: str
+    name: str = ""
+    org_id: str = ""
+    created_at: datetime = Field(default_factory=_utcnow)
+    is_active: bool = True
+
+
+class Organization(BaseModel):
+    id: str = Field(default_factory=_uuid)
+    name: str
+    slug: str
+    created_at: datetime = Field(default_factory=_utcnow)
+    plan: str = "free"
+
+
+class AuditEvent(BaseModel):
+    id: str = Field(default_factory=_uuid)
+    project_id: str
+    session_id: str = ""
+    user_id: str = ""
+    org_id: str = ""
+    action: str
+    agent: str = ""
+    timestamp: datetime = Field(default_factory=_utcnow)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    ip_address: str = ""

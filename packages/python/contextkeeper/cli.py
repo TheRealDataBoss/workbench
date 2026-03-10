@@ -24,10 +24,12 @@ app = typer.Typer(
 sessions_app = typer.Typer(help="Manage sessions.", no_args_is_help=True)
 tasks_app = typer.Typer(help="Manage tasks.", no_args_is_help=True)
 decisions_app = typer.Typer(help="Manage decisions.", no_args_is_help=True)
+auth_app = typer.Typer(help="Manage API keys.", no_args_is_help=True)
 
 app.add_typer(sessions_app, name="sessions")
 app.add_typer(tasks_app, name="tasks")
 app.add_typer(decisions_app, name="decisions")
+app.add_typer(auth_app, name="auth")
 
 console = Console()
 err_console = Console(stderr=True)
@@ -53,7 +55,7 @@ def init(
         help="Coordination mode: sequential, lock, or merge",
     ),
     backend: str = typer.Option(
-        "file", "--backend", "-b", help="Backend: file or sqlite",
+        "file", "--backend", "-b", help="Backend: file, sqlite, or postgres",
     ),
 ) -> None:
     """Initialize a new contextkeeper project in the current directory."""
@@ -189,7 +191,7 @@ def doctor() -> None:
 
 @app.command()
 def migrate(
-    to: str = typer.Option(..., "--to", help="Target backend: file or sqlite"),
+    to: str = typer.Option(..., "--to", help="Target backend: file, sqlite, or postgres"),
 ) -> None:
     """Migrate data from current backend to a different backend."""
     try:
@@ -404,6 +406,86 @@ def decisions_add(
             border_style="green",
         ))
     except (ContextKeeperError, ValueError) as exc:
+        _handle_error(exc)
+
+
+# ── auth subcommands ──
+
+
+@auth_app.command(name="keygen")
+def auth_keygen(
+    name: str = typer.Option(..., "--name", help="Key name"),
+    scopes: Optional[list[str]] = typer.Option(None, "--scopes", help="Scopes (repeatable): read, write, admin"),
+    expires_days: Optional[int] = typer.Option(None, "--expires-days", help="Expire key after N days"),
+) -> None:
+    """Generate a new API key."""
+    try:
+        from contextkeeper.auth import APIKeyManager
+        mgr = APIKeyManager()
+        plaintext, api_key = mgr.generate_key(
+            name=name,
+            user_id="cli-user",
+            scopes=scopes or ["read", "write"],
+            expires_in_days=expires_days,
+        )
+        console.print(Panel(
+            f"[green]API key generated[/green]\n"
+            f"  Name:    {api_key.name}\n"
+            f"  ID:      {api_key.id}\n"
+            f"  Scopes:  {', '.join(api_key.scopes)}\n"
+            f"  Expires: {api_key.expires_at or 'never'}\n\n"
+            f"  [bold yellow]Key: {plaintext}[/bold yellow]\n\n"
+            f"  [red]Save this key now -- it will not be shown again.[/red]",
+            title="contextkeeper auth keygen",
+            border_style="green",
+        ))
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@auth_app.command(name="keys")
+def auth_keys() -> None:
+    """List all API keys (hash redacted)."""
+    try:
+        from contextkeeper.auth import APIKeyManager
+        mgr = APIKeyManager()
+        keys = mgr.list_keys()
+        if not keys:
+            console.print("No API keys found.")
+            return
+        table = Table(title="API Keys", border_style="cyan")
+        table.add_column("ID", style="bold")
+        table.add_column("Name")
+        table.add_column("Scopes")
+        table.add_column("Created")
+        table.add_column("Last Used")
+        for k in keys:
+            table.add_row(
+                k.id,
+                k.name,
+                ", ".join(k.scopes),
+                k.created_at.isoformat()[:19],
+                k.last_used_at.isoformat()[:19] if k.last_used_at else "never",
+            )
+        console.print(table)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@auth_app.command(name="revoke")
+def auth_revoke(
+    key_id: str = typer.Argument(..., help="API key ID to revoke"),
+) -> None:
+    """Revoke an API key."""
+    try:
+        from contextkeeper.auth import APIKeyManager
+        mgr = APIKeyManager()
+        if mgr.revoke_key(key_id):
+            console.print(f"[green]Revoked key {key_id}[/green]")
+        else:
+            console.print(f"[red]Key {key_id} not found[/red]")
+            raise typer.Exit(code=1)
+    except Exception as exc:
         _handle_error(exc)
 
 

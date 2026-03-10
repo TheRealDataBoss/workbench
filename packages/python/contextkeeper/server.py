@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from contextkeeper.auth import APIKeyManager, AuthMiddleware
 from contextkeeper.client import ContextKeeperClient
 from contextkeeper.exceptions import (
     ContextKeeperError,
@@ -19,6 +20,8 @@ from contextkeeper.exceptions import (
     SessionNotFoundError,
 )
 from contextkeeper.models import (
+    ApiKey,
+    AuditEvent,
     Handoff,
     HandoffDiff,
     ProjectConfig,
@@ -96,6 +99,17 @@ class DoctorResponse(BaseModel):
     checks: list[DoctorCheck]
 
 
+class KeygenRequest(BaseModel):
+    name: str
+    scopes: list[str] = Field(default_factory=lambda: ["read", "write"])
+    expires_in_days: int | None = None
+
+
+class KeygenResponse(BaseModel):
+    key: str
+    api_key: ApiKey
+
+
 # ── helpers ──
 
 
@@ -121,7 +135,7 @@ def _handle(exc: ContextKeeperError) -> HTTPException:
 app = FastAPI(
     title="contextkeeper",
     description="Zero model drift between AI agents.",
-    version="0.5.0",  # keep in sync with pyproject.toml
+    version="0.6.0",  # keep in sync with pyproject.toml
 )
 
 cors_origins = os.environ.get("CONTEXTKEEPER_CORS_ORIGINS", "*").split(",")
@@ -133,6 +147,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Auth middleware — disabled by default for local dev
+_auth_required = os.environ.get("CONTEXTKEEPER_AUTH", "false").lower() == "true"
+_key_manager = APIKeyManager()
+if _auth_required:
+    app.add_middleware(AuthMiddleware, auth_required=True, key_manager=_key_manager)
+
+
+def _maybe_audit(client: ContextKeeperClient, action: str, request: Request | None = None) -> None:
+    """Write audit event if backend supports it (Postgres only)."""
+    from contextkeeper.backends.postgres import PostgresBackend
+    if isinstance(client.backend, PostgresBackend):
+        try:
+            config = client.backend.read_config()
+            ip = ""
+            if request and hasattr(request, "client") and request.client:
+                ip = request.client.host or ""
+            event = AuditEvent(
+                project_id=config.project_id,
+                action=action,
+                ip_address=ip,
+            )
+            client.backend.add_audit_event(event)
+        except Exception:
+            pass  # audit is best-effort
+
 
 # ── project endpoints ──
 
@@ -140,15 +179,18 @@ app.add_middleware(
 @app.post("/projects/init", response_model=ProjectConfig)
 def init_project(
     req: InitRequest,
+    request: Request,
     x_project_dir: str | None = Header(None),
 ):
     try:
         client = _get_client(x_project_dir)
-        return client.init(
+        result = client.init(
             name=req.name,
             backend_type=req.backend,
             coordination=req.coordination,
         )
+        _maybe_audit(client, "init", request)
+        return result
     except ContextKeeperError as exc:
         raise _handle(exc)
 
@@ -181,11 +223,14 @@ def get_doctor(x_project_dir: str | None = Header(None)):
 @app.post("/sessions", response_model=Session)
 def create_session(
     req: SessionRequest,
+    request: Request,
     x_project_dir: str | None = Header(None),
 ):
     try:
         client = _get_client(x_project_dir)
-        return client.open_session(agent=req.agent, agent_version=req.agent_version)
+        result = client.open_session(agent=req.agent, agent_version=req.agent_version)
+        _maybe_audit(client, "open_session", request)
+        return result
     except ContextKeeperError as exc:
         raise _handle(exc)
 
@@ -223,11 +268,12 @@ def close_session(session_id: str, x_project_dir: str | None = Header(None)):
 @app.post("/handoffs", response_model=Handoff)
 def create_handoff(
     req: SyncRequest,
+    request: Request,
     x_project_dir: str | None = Header(None),
 ):
     try:
         client = _get_client(x_project_dir)
-        return client.sync(
+        result = client.sync(
             notes=req.notes,
             agent=req.agent,
             agent_version=req.agent_version,
@@ -236,6 +282,8 @@ def create_handoff(
             open_questions=req.open_questions or None,
             next_steps=req.next_steps or None,
         )
+        _maybe_audit(client, "sync", request)
+        return result
     except ContextKeeperError as exc:
         raise _handle(exc)
 
@@ -288,10 +336,10 @@ def get_bootstrap(x_project_dir: str | None = Header(None)):
 
 
 @app.post("/tasks", response_model=Handoff)
-def add_task(req: TaskRequest, x_project_dir: str | None = Header(None)):
+def add_task(req: TaskRequest, request: Request, x_project_dir: str | None = Header(None)):
     try:
         client = _get_client(x_project_dir)
-        return client.add_task(
+        result = client.add_task(
             task_id=req.task_id,
             title=req.title,
             status=req.status,
@@ -299,6 +347,8 @@ def add_task(req: TaskRequest, x_project_dir: str | None = Header(None)):
             depends_on=req.depends_on,
             notes=req.notes,
         )
+        _maybe_audit(client, "add_task", request)
+        return result
     except HandoffNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except ContextKeeperError as exc:
@@ -326,16 +376,18 @@ def update_task_status(
 
 
 @app.post("/decisions", response_model=Handoff)
-def add_decision(req: DecisionRequest, x_project_dir: str | None = Header(None)):
+def add_decision(req: DecisionRequest, request: Request, x_project_dir: str | None = Header(None)):
     try:
         client = _get_client(x_project_dir)
-        return client.add_decision(
+        result = client.add_decision(
             decision_id=req.decision_id,
             summary=req.summary,
             rationale=req.rationale,
             made_by=req.made_by,
             supersedes=req.supersedes,
         )
+        _maybe_audit(client, "add_decision", request)
+        return result
     except HandoffNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except ContextKeeperError as exc:
@@ -358,6 +410,42 @@ def get_diff(
         raise HTTPException(status_code=404, detail=str(exc))
     except ContextKeeperError as exc:
         raise _handle(exc)
+
+
+# ── auth endpoints ──
+
+
+@app.post("/auth/keys", response_model=KeygenResponse)
+def create_api_key(req: KeygenRequest, request: Request):
+    try:
+        plaintext, api_key = _key_manager.generate_key(
+            name=req.name,
+            user_id="api-user",
+            scopes=req.scopes,
+            expires_in_days=req.expires_in_days,
+        )
+        return KeygenResponse(key=plaintext, api_key=api_key)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/auth/keys", response_model=list[ApiKey])
+def list_api_keys():
+    try:
+        keys = _key_manager.list_keys()
+        # Redact hashes
+        for k in keys:
+            k.key_hash = k.key_hash[:8] + "..."
+        return keys
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.delete("/auth/keys/{key_id}")
+def revoke_api_key(key_id: str):
+    if _key_manager.revoke_key(key_id):
+        return {"detail": f"Key {key_id} revoked"}
+    raise HTTPException(status_code=404, detail=f"Key {key_id} not found")
 
 
 def main():
