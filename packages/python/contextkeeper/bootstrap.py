@@ -1,4 +1,4 @@
-"""agentlock bootstrap — generate paste-ready AI bootstrap prompt."""
+"""contextkeeper bootstrap — generate paste-ready AI bootstrap prompt."""
 
 from __future__ import annotations
 
@@ -52,10 +52,10 @@ def generate_bootstrap(
     config = _load_config(cwd)
     bridge_repo = bridge or (config and config.get("bridge_repo"))
 
-    console.print("\n  [cyan]workbench bootstrap[/cyan]\n")
+    console.print("\n  [cyan]contextkeeper bootstrap[/cyan]\n")
 
     if not bridge_repo:
-        console.print("  [red]No bridge repo configured. Run workbench init or pass --bridge.[/red]")
+        console.print("  [red]No bridge repo configured. Run contextkeeper init or pass --bridge.[/red]")
         raise SystemExit(1)
 
     # Verify the project exists

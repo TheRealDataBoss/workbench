@@ -1,4 +1,4 @@
-"""agentlock init — initialize state files in the current project."""
+"""contextkeeper init — initialize state files in the current project."""
 
 from __future__ import annotations
 
@@ -60,7 +60,7 @@ def init_project(
     cwd = Path.cwd()
     project_name = project or cwd.name
 
-    console.print("\n  [cyan]workbench init[/cyan]\n")
+    console.print("\n  [cyan]contextkeeper init[/cyan]\n")
 
     # Detect project type
     detected_type, detected_label = detect_project_type(cwd)
@@ -154,4 +154,4 @@ None
     console.print("\n  [cyan]Next steps:[/cyan]")
     console.print("  1. Fill in the [FILL IN] sections in docs/HANDOFF.md")
     console.print("  2. Review handoff/STATE_VECTOR.json")
-    console.print("  3. Run: [bold]workbench sync[/bold] to push to your bridge repo\n")
+    console.print("  3. Run: [bold]contextkeeper sync[/bold] to push to your bridge repo\n")

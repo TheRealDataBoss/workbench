@@ -3,7 +3,7 @@ import { homedir } from 'os'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
-const RC_PATH = join(homedir(), '.workbenchrc')
+const RC_PATH = join(homedir(), '.contextkeeperrc')
 
 function readRc() {
   try {

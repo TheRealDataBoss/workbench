@@ -83,7 +83,7 @@ async function resolveToken() {
   let token = getToken()
   if (token) return token
 
-  console.log(chalk.yellow('  No GitHub token found in ~/.workbenchrc'))
+  console.log(chalk.yellow('  No GitHub token found in ~/.contextkeeperrc'))
   console.log(chalk.gray('  Create a token at: https://github.com/settings/tokens'))
   console.log(chalk.gray('  Required scope: repo (full control of private repositories)\n'))
 
@@ -99,7 +99,7 @@ async function resolveToken() {
   }
 
   setToken(token)
-  console.log(chalk.green('  Token saved to ~/.workbenchrc\n'))
+  console.log(chalk.green('  Token saved to ~/.contextkeeperrc\n'))
   return token
 }
 

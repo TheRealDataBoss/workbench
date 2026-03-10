@@ -1,4 +1,4 @@
-"""agentlock sync — push state files to the bridge repo."""
+"""contextkeeper sync — push state files to the bridge repo."""
 
 from __future__ import annotations
 
@@ -40,10 +40,10 @@ def sync_project(bridge: str | None = None, dry_run: bool = False) -> None:
     cwd = Path.cwd()
     config = _load_config(cwd)
 
-    console.print("\n  [cyan]workbench sync[/cyan]\n")
+    console.print("\n  [cyan]contextkeeper sync[/cyan]\n")
 
     if not config and not bridge:
-        console.print("  [red]No .workbench config found. Run workbench init first, or pass --bridge.[/red]")
+        console.print("  [red]No .workbench config found. Run contextkeeper init first, or pass --bridge.[/red]")
         raise SystemExit(1)
 
     bridge_repo = bridge or (config and config.get("bridge_repo"))
@@ -52,7 +52,7 @@ def sync_project(bridge: str | None = None, dry_run: bool = False) -> None:
     handoff_rel = config.get("handoff_path", "docs/HANDOFF.md") if config else "docs/HANDOFF.md"
 
     if not bridge_repo:
-        console.print("  [red]No bridge repo configured. Run workbench init or pass --bridge.[/red]")
+        console.print("  [red]No bridge repo configured. Run contextkeeper init or pass --bridge.[/red]")
         raise SystemExit(1)
 
     if not project_name:

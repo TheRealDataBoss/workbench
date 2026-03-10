@@ -99,10 +99,10 @@ export async function runDoctor() {
   // 5. GitHub PAT exists
   const token = getToken()
   if (token) {
-    console.log(`  ${PASS} GitHub token found in ~/.workbenchrc`)
+    console.log(`  ${PASS} GitHub token found in ~/.contextkeeperrc`)
     passed++
   } else {
-    console.log(`  ${FAIL} GitHub token missing — run: workbench sync to configure`)
+    console.log(`  ${FAIL} GitHub token missing — run: contextkeeper sync to configure`)
     failed++
   }
 

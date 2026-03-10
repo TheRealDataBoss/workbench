@@ -1,4 +1,4 @@
-"""agentlock status — show status of all projects in the bridge repo."""
+"""contextkeeper status — show status of all projects in the bridge repo."""
 
 from __future__ import annotations
 
@@ -41,10 +41,10 @@ def show_status(bridge: str | None = None, json_output: bool = False) -> None:
     config = _load_config(cwd)
     bridge_repo = bridge or (config and config.get("bridge_repo"))
 
-    console.print("\n  [cyan]workbench status[/cyan]\n")
+    console.print("\n  [cyan]contextkeeper status[/cyan]\n")
 
     if not bridge_repo:
-        console.print("  [red]No bridge repo configured. Run workbench init or pass --bridge.[/red]")
+        console.print("  [red]No bridge repo configured. Run contextkeeper init or pass --bridge.[/red]")
         raise SystemExit(1)
 
     tmp_dir = Path(tempfile.mkdtemp(prefix="workbench-"))

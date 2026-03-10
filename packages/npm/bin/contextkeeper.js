@@ -13,13 +13,13 @@ const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8
 const program = new Command()
 
 program
-  .name('agentlock')
+  .name('contextkeeper')
   .description('Zero model drift between AI agents. Universal session continuity protocol and CLI for Claude, GPT, Gemini, and any LLM.')
   .version(pkg.version, '-v, --version')
 
 program
   .command('init')
-  .description('Initialize agentlock state files in the current project')
+  .description('Initialize contextkeeper state files in the current project')
   .option('-p, --project <name>', 'Project slug')
   .option('-t, --type <type>', 'Project type')
   .option('--bridge <repo>', 'Bridge repo URL (e.g. user/workbench)')
