@@ -1,0 +1,33 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.therealdataboss/contextkeeper",
+  "description": "Zero model drift between AI agents. Universal session continuity for Claude, GPT, Gemini, and any LLM.",
+  "title": "contextkeeper",
+  "websiteUrl": "https://pypi.org/project/contextkeeper/",
+  "repository": {
+    "url": "https://github.com/TheRealDataBoss/workbench",
+    "source": "github",
+    "subfolder": "packages/python"
+  },
+  "version": "0.2.4",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "contextkeeper",
+      "version": "0.2.4",
+      "transport": {
+        "type": "stdio"
+      }
+    },
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "contextkeeper",
+      "version": "0.2.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

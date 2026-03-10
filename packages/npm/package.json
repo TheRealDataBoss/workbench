@@ -16,6 +16,7 @@
     "cli",
     "session-management"
   ],
+  "mcpName": "io.github.therealdataboss/contextkeeper",
   "license": "MIT",
   "author": "TheRealDataBoss",
   "repository": {

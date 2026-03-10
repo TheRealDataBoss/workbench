@@ -24,7 +24,7 @@
     "TASK-0012": {"status": "DONE", "desc": "Build MCP server"},
     "TASK-0013": {"status": "DONE", "desc": "Build REST API (FastAPI)"},
     "TASK-0014": {"status": "DONE", "desc": "Write OpenAPI spec for GPT action"},
-    "TASK-0015": {"status": "PENDING", "desc": "Submit to MCP registry"},
+    "TASK-0015": {"status": "PENDING-MANUAL", "desc": "Submit to MCP registry", "notes": "server.json + mcpName + mcp-name created. mcp-publisher v1.5.0 downloaded. Needs: mcp-publisher login github (browser OAuth), then mcp-publisher publish server.json"},
     "TASK-0016": {"status": "PENDING", "desc": "Build contextkeeper.ai landing page"}
   },
   "decisions": {
