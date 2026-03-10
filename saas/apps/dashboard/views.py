@@ -13,6 +13,11 @@ def index(request):
     return render(request, "home.html")
 
 
+def home_public(request):
+    """Public landing page, always renders regardless of auth."""
+    return render(request, "home.html")
+
+
 @login_required
 def dashboard(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
