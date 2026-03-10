@@ -10,7 +10,7 @@ from apps.projects.models import Handoff, Project, Session
 def index(request):
     if request.user.is_authenticated:
         return redirect("dashboard:dashboard")
-    return redirect("account_login")
+    return render(request, "home.html")
 
 
 @login_required

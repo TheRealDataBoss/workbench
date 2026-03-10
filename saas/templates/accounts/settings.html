@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Settings - contextkeeper{% endblock %}
 {% block content %}
-<h1 class="font-sans text-3xl font-bold mb-8">Settings</h1>
+<h1 class="font-mono text-3xl font-bold mb-8">Settings</h1>
 
 <div class="grid grid-cols-2 gap-6">
   <div class="bg-ck-surface border border-ck-border rounded-lg p-6">
-    <h2 class="font-sans font-semibold text-lg mb-4">Profile</h2>
+    <h2 class="font-mono font-semibold text-lg mb-4">Profile</h2>
     <div class="space-y-3 text-sm">
       <div><span class="text-ck-muted">Email:</span> {{ user.email }}</div>
       <div><span class="text-ck-muted">GitHub:</span> {{ profile.github_username|default:"not linked" }}</div>
@@ -15,7 +15,7 @@
   </div>
 
   <div class="bg-ck-surface border border-ck-border rounded-lg p-6">
-    <h2 class="font-sans font-semibold text-lg mb-4">API Key</h2>
+    <h2 class="font-mono font-semibold text-lg mb-4">API Key</h2>
     {% if new_key %}
       <div class="bg-ck-bg border border-ck-cyan rounded p-4 mb-4">
         <div class="text-xs text-ck-cyan mb-2 uppercase tracking-wider">New API Key (save now)</div>

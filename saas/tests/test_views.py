@@ -10,10 +10,12 @@ User = get_user_model()
 
 
 class IndexViewTests(TestCase):
-    def test_anonymous_redirects_to_login(self):
+    def test_anonymous_sees_landing_page(self):
         resp = self.client.get("/")
-        self.assertEqual(resp.status_code, 302)
-        self.assertIn("account", resp.url.lower())
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, "home.html")
+        self.assertContains(resp, "contextkeeper")
+        self.assertContains(resp, "Zero model drift")
 
     def test_authenticated_redirects_to_dashboard(self):
         user = User.objects.create_user(

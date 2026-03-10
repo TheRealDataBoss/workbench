@@ -8,18 +8,29 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",  # noqa: F405
-    }
-}
+import dj_database_url
 
-# Override with PostgreSQL if DATABASE_URL is set
 _db_url = config("DATABASE_URL", default="")
-if _db_url:
-    import dj_database_url
-    DATABASES["default"] = dj_database_url.parse(_db_url)
+_use_pg = False
+
+if _db_url and _db_url.startswith("postgres"):
+    try:
+        import psycopg2
+        conn = psycopg2.connect(_db_url, connect_timeout=2)
+        conn.close()
+        _use_pg = True
+    except Exception:
+        _use_pg = False
+
+if _use_pg:
+    DATABASES = {"default": dj_database_url.parse(_db_url)}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",  # noqa: F405
+        }
+    }
 
 # Show browsable API in dev
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [  # noqa: F405

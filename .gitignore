@@ -9,6 +9,11 @@ packages/npm/package-lock.json
 # contextkeeper local state
 **/.contextkeeper/
 
+# Django
+**/.env
+**/db.sqlite3
+**/staticfiles/
+
 # Python
 **/__pycache__/
 **/*.pyc
