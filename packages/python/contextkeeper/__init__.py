@@ -1,3 +1,4 @@
-"""contextkeeper: Zero model drift between AI agents. Universal session continuity protocol and CLI."""
+from contextkeeper.api import bootstrap, sync, status, init, doctor
 
-__version__ = "0.2.0"
+__all__ = ["bootstrap", "sync", "status", "init", "doctor"]
+__version__ = "0.2.2"

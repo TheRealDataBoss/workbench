@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "contextkeeper"
-version = "0.2.1"
-description = "Zero model drift between AI agents. Universal session continuity protocol and CLI for Claude, GPT, Gemini, and any LLM."
+version = "0.2.2"
+description = "Zero model drift between AI agents. Universal session continuity CLI and Python library for Claude, GPT, Gemini, and any LLM."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -22,17 +22,16 @@ keywords = [
     "cli",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
+    "Topic :: Utilities",
+    "Topic :: Software Development :: Version Control",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Topic :: Software Development :: Libraries",
-    "Topic :: Software Development :: Quality Assurance",
 ]
 dependencies = [
     "typer>=0.9.0",
