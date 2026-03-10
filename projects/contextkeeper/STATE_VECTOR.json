@@ -1,15 +1,15 @@
 {
   "project": "contextkeeper",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "status": "ACTIVE",
   "phase": "post-launch",
-  "next_task": "TASK-0012",
+  "next_task": "TASK-0015",
   "packages": {
-    "pypi": "0.2.3",
+    "pypi": "0.2.4",
     "npm": "0.2.1"
   },
   "urls": {
-    "pypi": "https://pypi.org/project/contextkeeper/0.2.3/",
+    "pypi": "https://pypi.org/project/contextkeeper/0.2.4/",
     "npm": "https://www.npmjs.com/package/contextkeeper",
     "github": "https://github.com/TheRealDataBoss/workbench"
   },
@@ -21,9 +21,9 @@
     "TASK-0010a": {"status": "DONE", "desc": "Add doctor command to Python CLI"},
     "TASK-0010b": {"status": "DONE", "desc": "Fix Unicode arrow crash on Windows cp1252"},
     "TASK-0011": {"status": "DONE", "desc": "Expose Python library API"},
-    "TASK-0012": {"status": "PENDING", "desc": "Build MCP server"},
-    "TASK-0013": {"status": "PENDING", "desc": "Build REST API (FastAPI)"},
-    "TASK-0014": {"status": "PENDING", "desc": "Write OpenAPI spec for GPT action"},
+    "TASK-0012": {"status": "DONE", "desc": "Build MCP server"},
+    "TASK-0013": {"status": "DONE", "desc": "Build REST API (FastAPI)"},
+    "TASK-0014": {"status": "DONE", "desc": "Write OpenAPI spec for GPT action"},
     "TASK-0015": {"status": "PENDING", "desc": "Submit to MCP registry"},
     "TASK-0016": {"status": "PENDING", "desc": "Build contextkeeper.ai landing page"}
   },

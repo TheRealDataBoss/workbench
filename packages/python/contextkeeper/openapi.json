@@ -1,0 +1,321 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "contextkeeper",
+    "description": "Zero model drift between AI agents. Universal session continuity for Claude, GPT, Gemini, and any LLM.",
+    "version": "0.2.4",
+    "contact": {
+      "name": "TheRealDataBoss",
+      "url": "https://github.com/TheRealDataBoss/workbench"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/TheRealDataBoss/workbench/blob/main/LICENSE"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.contextkeeper.ai",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/init": {
+      "post": {
+        "operationId": "initProject",
+        "summary": "Initialize contextkeeper state files",
+        "description": "Creates STATE_VECTOR.json, HANDOFF.md, and .workbench config in the current project directory. Auto-detects project type.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Initialization result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sync": {
+      "post": {
+        "operationId": "syncProject",
+        "summary": "Sync state files to GitHub bridge repo",
+        "description": "Validates STATE_VECTOR.json, clones the bridge repo, copies state files, commits, and pushes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sync result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "operationId": "getStatus",
+        "summary": "Get status of all tracked projects",
+        "description": "Clones the bridge repo and reads STATE_VECTOR.json from each project directory.",
+        "parameters": [
+          {
+            "name": "bridge",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "GitHub bridge repo e.g. 'username/workbench'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of all projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bootstrap": {
+      "post": {
+        "operationId": "generateBootstrap",
+        "summary": "Generate paste-ready AI bootstrap prompt",
+        "description": "Builds a prompt with raw GitHub URLs to PROFILE.md, HANDOFF.md, and STATE_VECTOR.json. Paste into any AI chat for full context in under 60 seconds.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BootstrapRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bootstrap prompt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BootstrapResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/doctor": {
+      "get": {
+        "operationId": "runDoctor",
+        "summary": "Run environment health check",
+        "description": "Checks Python version, git, GitHub token, API reachability, STATE_VECTOR.json presence and validity.",
+        "responses": {
+          "200": {
+            "description": "Health check results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "InitRequest": {
+        "type": "object",
+        "properties": {
+          "project": {
+            "type": "string",
+            "description": "Project slug (default: current directory name)",
+            "nullable": true
+          },
+          "bridge": {
+            "type": "string",
+            "description": "GitHub bridge repo e.g. 'username/workbench'",
+            "nullable": true
+          },
+          "project_type": {
+            "type": "string",
+            "description": "Override project type detection",
+            "nullable": true
+          }
+        }
+      },
+      "SyncRequest": {
+        "type": "object",
+        "properties": {
+          "bridge": {
+            "type": "string",
+            "description": "GitHub bridge repo e.g. 'username/workbench'",
+            "nullable": true
+          },
+          "dry_run": {
+            "type": "boolean",
+            "description": "Preview without pushing",
+            "default": false
+          }
+        }
+      },
+      "BootstrapRequest": {
+        "type": "object",
+        "required": ["project"],
+        "properties": {
+          "project": {
+            "type": "string",
+            "description": "Project slug (required)"
+          },
+          "bridge": {
+            "type": "string",
+            "description": "GitHub bridge repo e.g. 'username/workbench'",
+            "nullable": true
+          },
+          "clipboard": {
+            "type": "boolean",
+            "description": "Copy prompt to system clipboard",
+            "default": false
+          }
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "InitResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean"
+              },
+              "stdout": {
+                "type": "string"
+              },
+              "stderr": {
+                "type": "string"
+              },
+              "project": {
+                "type": "string"
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean"
+              },
+              "projects": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "type": { "type": "string" },
+                    "status": { "type": "string" },
+                    "task": { "type": "string" },
+                    "blocker": { "type": "string" },
+                    "updated": { "type": "string" }
+                  }
+                }
+              },
+              "raw": {
+                "type": "string"
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "BootstrapResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "prompt": {
+                "type": "string"
+              }
+            }
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}
