@@ -1,15 +1,16 @@
 {
   "project": "contextkeeper",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "status": "ACTIVE",
-  "phase": "post-launch",
-  "next_task": "TASK-0016",
+  "phase": "Phase 1 complete -- Phase 2 ready",
+  "last_published": "2026-03-10",
+  "next_task": "TASK-0017",
   "packages": {
-    "pypi": "0.2.7",
+    "pypi": "0.3.0",
     "npm": "0.2.1"
   },
   "urls": {
-    "pypi": "https://pypi.org/project/contextkeeper/0.2.7/",
+    "pypi": "https://pypi.org/project/contextkeeper/0.3.0/",
     "mcp_registry": "https://registry.modelcontextprotocol.io",
     "npm": "https://www.npmjs.com/package/contextkeeper",
     "github": "https://github.com/TheRealDataBoss/contextkeeper",
