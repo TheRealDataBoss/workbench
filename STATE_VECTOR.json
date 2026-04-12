@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-12T22:00:00",
+  "lastUpdated": "2026-04-13T01:00:00",
   "currentSprint": "Sprint 6 -- Notebook Port (reserved for paired session)",
   "currentTask": "S6-01 -- Read and audit full Notebook monolith",
   "platform": {
@@ -7,10 +7,10 @@
     "templates": 8,
     "connectors": 26,
     "bottomPanelTabs": 10,
-    "lastCommit": "a21a68e",
+    "lastCommit": "d4f5e07",
     "buildStatus": "PASSING",
     "typecheckStatus": "PASSING",
-    "mainChunkKB": 1845
+    "mainChunkKB": 1851
   },
   "knownIssues": [],
   "completedSprints": [
@@ -18,47 +18,36 @@
     { "sprint": "Sprint 2 -- KaTeX + Markdown", "completedAt": "2026-04-12" },
     { "sprint": "Sprint 3 -- First-Run + Housekeeping", "completedAt": "2026-04-12" },
     { "sprint": "Sprint 4 -- Connectors", "completedAt": "2026-04-12" },
+    { "sprint": "Sprint 5A -- Model Tournament", "completedAt": "2026-04-12" },
     {
-      "sprint": "Sprint 5A -- Model Tournament",
-      "completedAt": "2026-04-12",
+      "sprint": "Sprint 5B -- Pareto + Prompts + Datasets",
+      "completedAt": "2026-04-13",
       "tasks": [
-        "ModelTournament component with parallel multi-model execution",
-        "Model selection with Free Only filter, CHAT_MODELS_BY_PROVIDER grid",
-        "Side-by-side result cards with RenderedOutput, voting, badges (CHEAPEST/FASTEST/BEST)",
-        "Tournament button in CanvasToolbar (amber trophy icon)"
+        "ParetoFrontier Plotly scatter with Pareto-optimal detection and gold frontier line",
+        "PromptVersionHistory with localStorage auto-save, restore, and diff",
+        "EvalDatasetBuilder modal (ShareGPT/Alpaca/OpenAI JSONL) with step selection and preview",
+        "Build Training Dataset button in Results tab with one-click flow to Fine-Tune"
       ]
     },
+    { "sprint": "Sprint 7 -- Fine-Tuning Pipeline", "completedAt": "2026-04-12" },
+    { "sprint": "Sprint 8A -- Trace to Fine-Tune", "completedAt": "2026-04-13", "tasks": ["One-click flow: Results tab -> Dataset Builder -> Fine-Tune Panel pre-loaded"] },
+    { "sprint": "Sprint 8B+8C -- Profiler + Health Score", "completedAt": "2026-04-12" },
     {
-      "sprint": "Sprint 7 -- Fine-Tuning Pipeline",
-      "completedAt": "2026-04-12",
+      "sprint": "Sprint 8D -- Chaos + Replay",
+      "completedAt": "2026-04-13",
       "tasks": [
-        "FastAPI finetune router: /start, /status, /cancel, /jobs, /models, /datasets, /supported-models",
-        "Background training with HuggingFace TRL + PEFT (QLoRA)",
-        "5 supported base models (Llama 3.1/3.2, Qwen 2.5, Mistral 7B, Phi-3.5)",
-        "FineTunePanel modal: model selection, dataset management, hyperparameters, presets, VRAM estimator",
-        "Live job progress polling with loss history",
-        "Model registry and dataset management tabs"
-      ]
-    },
-    {
-      "sprint": "Sprint 8B+8C -- Profiler + Health Score",
-      "completedAt": "2026-04-12",
-      "tasks": [
-        "PipelineProfiler SVG flame graph (10th bottom panel tab)",
-        "Per-node timing bars with click-to-select, bottleneck markers",
-        "Summary: total time, slowest node, cheapest node, most tokens",
-        "HealthScore circular gauge in Topbar (0-100, error/latency/cost/completion)",
-        "Color-coded: green 80+, amber 50-79, red 0-49"
+        "ChaosRunner with 6 failure modes (timeout, empty context, adversarial, model degradation, token starvation, random failure)",
+        "Intensity slider, per-node targeting, resilience score 0-100",
+        "Session Replay enhanced: RenderedOutput for active step, click-to-select canvas node, split layout"
       ]
     }
   ],
   "nextActions": [
     "Sprint 6: Notebook port (reserved for paired session with Steven)",
-    "Sprint 5B: Pareto frontier, prompt versioning, eval dataset builder",
-    "Sprint 8A/8D/8E: Trace-to-dataset, chaos engineering, session replay",
-    "Sprint 11: Additional node categories (DSPy, advanced RAG, safety)",
+    "Sprint 9: Observability and production monitoring",
+    "Sprint 11: Additional node categories",
     "Sprint 12: Connectors 21-50",
     "Sprint 13: Performance and polish"
   ],
-  "notes": "Sprints 5A, 7, 8B, 8C completed autonomously. Settings panel already exists with 18 provider API keys. Notebook reserved for paired session."
+  "notes": "All deferred sprints complete. 185 nodes, 10 bottom panel tabs, 26 connectors."
 }
